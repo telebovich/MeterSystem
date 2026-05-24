@@ -1,3 +1,3 @@
 namespace MeterSystem.Shared.Models;
 
-public record MeterData(long MeterNumber, Dictionary<DateTime, double> Readings);
+public record MeterData(long meter_number, Dictionary<DateTime, double> Readings);

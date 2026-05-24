@@ -9,7 +9,7 @@ namespace MeterSystem.Shared.src.Data
     public class Reading
     {
         [ProtoMember(1)]
-        public long MeterNumber { get; set; }
+        public long meter_number { get; set; }
         [ProtoMember(2)]
         public Dictionary<DateTime, double> Readings { get; set; } = new Dictionary<DateTime, double>();
     }

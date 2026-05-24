@@ -47,7 +47,7 @@ app.MapPost("/api/readings", async (MeterData meter) =>
             // TODO: Add automatic mapping or change the initial data model to match the message format
             var reading = new Reading
             {
-                MeterNumber = meter.MeterNumber,
+                meter_number = meter.meter_number,
                 Readings = meter.Readings
             };
 
