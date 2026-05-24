@@ -55,7 +55,7 @@ app.MapPost("/api/readings", async (MeterData meter) =>
             Serializer.Serialize(stream, reading); // Validate that the object can be serialized
             var data = stream.ToArray();
 
-            var message = new AmqpMessage(new Amqp.Message(data));
+            var message = new AmqpMessage(data);
             PublishResult pr = await publisher.PublishAsync(message);
             if (pr.Outcome.State != OutcomeState.Accepted)
             {
