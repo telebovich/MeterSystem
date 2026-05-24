@@ -29,7 +29,7 @@ app.MapPost("/api/readings", async (MeterData meter) =>
 
     ConnectionSettings settings = ConnectionSettingsBuilder.Create()
         .Uri(new Uri(brokerUri))
-        .ContainerId("tutorial-send")
+        .ContainerId("meter-readings")
         .Build();
 
     IEnvironment environment = AmqpEnvironment.Create(settings);
