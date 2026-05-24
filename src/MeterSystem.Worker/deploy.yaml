@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metersystem-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metersystem-worker
+  template:
+    metadata:
+      labels:
+        app: metersystem-worker
+    spec:
+      containers:
+        - name: metersystem-worker
+          image: metersystem-worker:latest
+          imagePullPolicy: Never
+

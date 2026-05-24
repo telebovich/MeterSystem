@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metersystem-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metersystem-api
+  template:
+    metadata:
+      labels:
+        app: metersystem-api
+    spec:
+      containers:
+        - name: metersystem-api
+          image: metersystem-api:latest
+          imagePullPolicy: Never
+
