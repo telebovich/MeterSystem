@@ -6,6 +6,7 @@
     <File Path="global.json" />
     <File Path="Instructions.md" />
     <File Path="deploy.sh" />
+    <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/MeterSystem.Api/MeterSystem.Api.csproj" />

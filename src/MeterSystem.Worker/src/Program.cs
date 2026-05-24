@@ -1,6 +1,6 @@
-using MeterSystem.Shared.src.Data;
+using System.Text.Json;
+using MeterSystem.Shared.Models;
 using Npgsql;
-using ProtoBuf;
 using RabbitMQ.AMQP.Client;
 using RabbitMQ.AMQP.Client.Impl;
 
@@ -22,7 +22,7 @@ IConsumer consumer = await connection.ConsumerBuilder()
     .InitialCredits(1)
     .MessageHandler(async (ctx, message) =>
     {
-        Reading reading = Serializer.Deserialize<Reading>(message.Body());
+        MeterSystem.Shared.Models.MeterData reading = JsonSerializer.Deserialize<MeterSystem.Shared.Models.MeterData>(message.Body())!;
 
         Console.WriteLine($" [x] Received");
         try
@@ -36,9 +36,30 @@ IConsumer consumer = await connection.ConsumerBuilder()
     })
     .BuildAndStartAsync();
 
+IConsumer rawConsumer = await connection.ConsumerBuilder()
+    .Queue("raw_meter_readings")
+    .InitialCredits(1)
+    .MessageHandler(async (ctx, message) =>
+    {
+        RawMeterData data = JsonSerializer.Deserialize<RawMeterData>(message.Body())!;
+
+        var deserializedByteArray = Convert.FromBase64String(data.Data);
+        var readings = MeterData.Parser.ParseFrom(deserializedByteArray);
+        Console.WriteLine($" [x] Received Raw Reading");
+        try
+        {
+           await DoRawWork(data.MeterNumber, readings);
+        }
+        finally
+        {
+            ctx.Accept();
+        }
+    })
+    .BuildAndStartAsync();
+
 host.Run();
 
-async Task DoWork(Reading body)
+async Task DoWork(MeterSystem.Shared.Models.MeterData body)
 {
     var connString = "Host=postgres;Username=postgres;Password=postgres;Database=meters;GssEncMode=Disable";
     await using var conn = new NpgsqlConnection(connString);
@@ -57,18 +78,57 @@ async Task DoWork(Reading body)
         }
     }
 
-    if (meter_id != null)
+    if (meter_id is null)
     {
-        foreach (var reading in body.Readings)
+        return;
+    }
+
+    foreach (var reading in body.Readings)
+    {
+        await using (var cmd = new NpgsqlCommand("INSERT INTO meter_readings (meter_id, value_at, value, received_at_utc) VALUES (@p1, @p2, @p3, @p4)", conn))
         {
-            await using (var cmd = new NpgsqlCommand("INSERT INTO meter_readings (meter_id, value_at, value, received_at_utc) VALUES (@p1, @p2, @p3, @p4)", conn))
-            {
-                cmd.Parameters.AddWithValue("p1", meter_id);
-                cmd.Parameters.AddWithValue("p2", reading.Key);
-                cmd.Parameters.AddWithValue("p3", reading.Value);
-                cmd.Parameters.AddWithValue("p4", DateTime.UtcNow);
-                await cmd.ExecuteNonQueryAsync();
-            }
+            cmd.Parameters.AddWithValue("p1", meter_id);
+            cmd.Parameters.AddWithValue("p2", reading.Key);
+            cmd.Parameters.AddWithValue("p3", reading.Value);
+            cmd.Parameters.AddWithValue("p4", DateTime.UtcNow);
+            await cmd.ExecuteNonQueryAsync();
+        }
+    }
+}
+
+async Task DoRawWork(long meter_number, MeterData data)
+{
+    var connString = "Host=postgres;Username=postgres;Password=postgres;Database=meters;GssEncMode=Disable";
+    await using var conn = new NpgsqlConnection(connString);
+    await conn.OpenAsync();
+
+    int? meter_id = null;
+    // Insert some data
+    await using (var cmd = new NpgsqlCommand("INSERT INTO meters (meter_number) VALUES (@p) RETURNING meter_id", conn))
+    {
+        cmd.Parameters.AddWithValue("p", meter_number);
+        var mtr_id = await cmd.ExecuteScalarAsync();
+
+        if (mtr_id is not null)
+        {
+            meter_id = Convert.ToInt32(mtr_id);
+        }
+    }
+
+    if (meter_id is null)
+    {
+        return;
+    }
+
+    foreach (var reading in data.Readings)
+    {
+        await using (var cmd = new NpgsqlCommand("INSERT INTO meter_readings (meter_id, value_at, value, received_at_utc) VALUES (@p1, @p2, @p3, @p4)", conn))
+        {
+            cmd.Parameters.AddWithValue("p1", meter_id);
+            cmd.Parameters.AddWithValue("p2", reading.Timestamp.ToDateTime());
+            cmd.Parameters.AddWithValue("p3", reading.Value);
+            cmd.Parameters.AddWithValue("p4", DateTime.UtcNow);
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }

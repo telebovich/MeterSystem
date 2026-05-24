@@ -1,0 +1,12 @@
+edition = "2023";
+
+import "google/protobuf/timestamp.proto";
+
+message MeterData {
+    message MeterReading {
+        google.protobuf.Timestamp timestamp = 1;
+        double value = 2;
+    }
+
+    repeated MeterReading readings = 1;
+}
