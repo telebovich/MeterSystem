@@ -2,8 +2,8 @@
 set -euo pipefail
 
 echo "Downloading Images..."
-minikube.exe image pull postgres:18
-minikube.exe image pull rabbitmq:3-management
+minikube image pull postgres:18
+minikube image pull rabbitmq:4-management
 
 echo "Deploying Queue..."
 kubectl apply -f queue/deploy.yaml
@@ -15,12 +15,12 @@ kubectl exec -i "$(kubectl get pod -l app=postgres -o jsonpath='{.items[0].metad
 
 echo "Publishing and Deploying API..."
 dotnet publish ./src/MeterSystem.Api/MeterSystem.Api.csproj -t:PublishContainer
-minikube.exe image load metersystem-api:latest
+minikube image load metersystem-api:latest
 kubectl apply -f ./src/MeterSystem.Api/deploy.yaml
 
 echo "Deploying Worker..."
 dotnet publish ./src/MeterSystem.Worker/MeterSystem.Worker.csproj -t:PublishContainer
-minikube.exe image load metersystem-worker:latest
+minikube image load metersystem-worker:latest
 kubectl apply -f ./src/MeterSystem.Worker/deploy.yaml
 
 echo "done"

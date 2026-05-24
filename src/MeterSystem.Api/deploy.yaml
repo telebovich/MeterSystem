@@ -16,4 +16,18 @@ spec:
         - name: metersystem-api
           image: metersystem-api:latest
           imagePullPolicy: Never
-
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metersystem-api
+spec:
+  selector:
+    app: metersystem-api
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

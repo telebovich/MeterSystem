@@ -11,7 +11,7 @@ const string brokerUri = "amqp://guest:guest@rabbitmq:5672/%2f";
 
 ConnectionSettings settings = ConnectionSettingsBuilder.Create()
     .Uri(new Uri(brokerUri))
-    .ContainerId("meter-readings")
+    .ContainerId("meter-readings-consumer")
     .Build();
 
 IEnvironment environment = AmqpEnvironment.Create(settings);
@@ -40,7 +40,7 @@ host.Run();
 
 async Task DoWork(Reading body)
 {
-    var connString = "Host=postgres;Username=postgres;Password=postgres;Database=meters";
+    var connString = "Host=postgres;Username=postgres;Password=postgres;Database=meters;No GSS Encoding=true";
     await using var conn = new NpgsqlConnection(connString);
     await conn.OpenAsync();
 
