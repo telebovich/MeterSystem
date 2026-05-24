@@ -44,6 +44,7 @@ app.MapPost("/api/readings", async (MeterData meter) =>
         IPublisher publisher = await connection.PublisherBuilder().Queue("meter_readings").BuildAsync();
         try
         {
+            // TODO: Add automatic mapping or change the initial data model to match the message format
             var reading = new Reading
             {
                 MeterNumber = meter.MeterNumber,
