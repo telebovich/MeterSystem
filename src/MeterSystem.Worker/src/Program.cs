@@ -40,7 +40,7 @@ host.Run();
 
 async Task DoWork(Reading body)
 {
-    var connString = "Host=postgres;Username=postgres;Password=postgres;Database=meters;No GSS Encoding=true";
+    var connString = "Host=postgres;Username=postgres;Password=postgres;Database=meters;GssEncMode=Disable";
     await using var conn = new NpgsqlConnection(connString);
     await conn.OpenAsync();
 
