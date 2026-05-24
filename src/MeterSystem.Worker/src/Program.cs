@@ -7,7 +7,7 @@ using RabbitMQ.AMQP.Client.Impl;
 var builder = Host.CreateApplicationBuilder(args);
 
 var host = builder.Build();
-const string brokerUri = "amqp://guest:guest@localhost:5672/%2f";
+const string brokerUri = "amqp://guest:guest@rabbitmq:5672/%2f";
 
 ConnectionSettings settings = ConnectionSettingsBuilder.Create()
     .Uri(new Uri(brokerUri))
@@ -40,7 +40,7 @@ host.Run();
 
 async Task DoWork(Reading body)
 {
-    var connString = "Host=localhost;Username=postgres;Password=passw0rd;Database=rimonim-tech";
+    var connString = "Host=postgres;Username=postgres;Password=postgres;Database=meters";
     await using var conn = new NpgsqlConnection(connString);
     await conn.OpenAsync();
 

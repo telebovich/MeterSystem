@@ -23,9 +23,17 @@ app.UseHttpsRedirection();
 
 app.MapPost("/api/readings", async (MeterData meter) =>
 {
-    // TODO: Validation logic
+    if (meter.meter_number <= 0)
+    {
+        return Results.BadRequest("Invalid meter number");
+    }
 
-    const string brokerUri = "amqp://guest:guest@localhost:5672/%2f";
+    if (meter.Readings == null || meter.Readings.Count == 0)
+    {
+        return Results.BadRequest("Readings cannot be empty");
+    }
+
+    const string brokerUri = "amqp://guest:guest@rabbitmq:5672/%2f";
 
     ConnectionSettings settings = ConnectionSettingsBuilder.Create()
         .Uri(new Uri(brokerUri))
