@@ -10,3 +10,9 @@ Known issues:
 Part of it worked ok but it stuck on creating the tables so I created them manually
 
 - For some reason `/api/readings/raw` endpoint returns 404 in kubernetes but works ok when running locally
+
+I use port forwarding or
+``` sh
+minikube service metersystem-api
+```
+to open access to the API service. The API runs on port 8080 internally.
