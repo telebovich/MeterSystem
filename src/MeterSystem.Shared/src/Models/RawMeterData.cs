@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace MeterSystem.Shared.src.Models
+namespace MeterSystem.Shared.Models
 {
     public class RawMeterData
     {
