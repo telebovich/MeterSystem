@@ -31,3 +31,22 @@ spec:
     - name: http
       port: 8080
       targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: readings-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web  # or websecure for HTTPS
+spec:
+  rules:
+    - host: metersystem.example.com
+      http:
+        paths:
+          - path: /api/readings
+            pathType: Prefix
+            backend:
+              service:
+                name: metersystem-api
+                port:
+                  number: 8080
