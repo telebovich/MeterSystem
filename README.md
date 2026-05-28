@@ -18,7 +18,7 @@ minikube service metersystem-api
 to open access to the API service. The API runs on port 8080 internally.
 
 ## Future improvements
-- To make the solution runnable on windows.
+- To make the solution runnable on windows by adding the init script to configmap and run it after the database is created.
 - To investigate the issue with `/api/readings/raw` endpoint in kubernetes.
   I think the issue is related to the fact that the solution was not buit correctly or the container is replaced incorrectly.
   It might use a container with an older build.
