@@ -91,7 +91,11 @@ async Task DoWork(MeterSystem.Shared.Models.MeterData body)
             cmd.Parameters.AddWithValue("p2", reading.Key);
             cmd.Parameters.AddWithValue("p3", reading.Value);
             cmd.Parameters.AddWithValue("p4", DateTime.UtcNow);
-            await cmd.ExecuteNonQueryAsync();
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex) { }
         }
     }
 }
@@ -128,7 +132,11 @@ async Task DoRawWork(long meter_number, MeterData data)
             cmd.Parameters.AddWithValue("p2", reading.Timestamp.ToDateTime());
             cmd.Parameters.AddWithValue("p3", reading.Value);
             cmd.Parameters.AddWithValue("p4", DateTime.UtcNow);
-            await cmd.ExecuteNonQueryAsync();
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex) { }
         }
     }
 }
