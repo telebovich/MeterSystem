@@ -136,7 +136,10 @@ async Task DoRawWork(long meter_number, MeterData data)
             {
                 await cmd.ExecuteNonQueryAsync();
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
