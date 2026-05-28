@@ -25,3 +25,4 @@ to open access to the API service. The API runs on port 8080 internally.
 - To use EasyNetQ instead of RabbitMQ.Client to simplify the code and make it more robust.
   Another option would be NServiceBus (debateble because it is not free is some cases but adds message retries and advanced monitoring).
 - To move out the settings from `appsettings.json` to Kubernetes configuration.
+- To remove code duplication if possible in Worker when adding a new reading to the database
